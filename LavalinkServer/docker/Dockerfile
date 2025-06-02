@@ -1,15 +1,21 @@
 FROM eclipse-temurin:18-jre-jammy
 
-# Run as non-root user
+# Create lavalink user/group for security
 RUN groupadd -g 322 lavalink && \
     useradd -r -u 322 -g lavalink lavalink
 
 WORKDIR /opt/Lavalink
 
+# Download Lavalink jar directly from official releases
+RUN apt-get update && apt-get install -y curl && \
+    curl -L -o Lavalink.jar https://github.com/freyacodes/Lavalink/releases/download/4.0.0/Lavalink.jar && \
+    chown lavalink:lavalink Lavalink.jar && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
 RUN chown -R lavalink:lavalink /opt/Lavalink
 
 USER lavalink
 
-COPY LavalinkServer/build/libs/Lavalink.jar Lavalink.jar
+COPY application.yml .
 
 ENTRYPOINT ["java", "-Djdk.tls.client.protocols=TLSv1.1,TLSv1.2", "-jar", "Lavalink.jar"]
