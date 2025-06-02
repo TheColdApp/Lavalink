@@ -16,6 +16,10 @@ RUN chown -R lavalink:lavalink /opt/Lavalink
 
 USER lavalink
 
-COPY application.yml .
+# Remove copying application.yml, config comes from env var
 
-ENTRYPOINT ["java", "-Djdk.tls.client.protocols=TLSv1.1,TLSv1.2", "-jar", "Lavalink.jar"]
+COPY entrypoint.sh .
+
+RUN chmod +x entrypoint.sh
+
+ENTRYPOINT ["./entrypoint.sh"]
